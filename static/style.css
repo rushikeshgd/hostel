@@ -1,0 +1,166 @@
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600&display=swap');
+
+*{
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+/* Body Styling */
+body{
+    font-family: 'Poppins', sans-serif;
+    background: linear-gradient(135deg, #1d2671, #c33764);
+    min-height: 100vh;
+    padding: 30px;
+}
+
+/* Main Container */
+.container{
+    width: 95%;
+    max-width: 1200px;
+    margin: auto;
+    display: flex;
+    gap: 30px;
+    flex-wrap: wrap;
+    justify-content: center;
+}
+
+/* Box Styling */
+.box{
+    background: rgba(255,255,255,0.15);
+    backdrop-filter: blur(12px);
+    padding: 30px;
+    border-radius: 20px;
+    width: 500px;
+    box-shadow: 0 8px 32px rgba(0,0,0,0.2);
+    border: 1px solid rgba(255,255,255,0.2);
+    transition: 0.4s;
+}
+
+/* Hover Effect */
+.box:hover{
+    transform: translateY(-5px);
+}
+
+/* Heading */
+h1{
+    width: 100%;
+    text-align: center;
+    color: white;
+    margin-bottom: 30px;
+    font-size: 38px;
+    font-weight: 600;
+    letter-spacing: 1px;
+}
+
+/* Sub Heading */
+h2{
+    color: white;
+    margin-bottom: 18px;
+    font-size: 24px;
+    font-weight: 500;
+}
+
+/* Input Fields */
+input,
+textarea{
+    width: 100%;
+    padding: 14px;
+    margin-top: 10px;
+    margin-bottom: 18px;
+    border: none;
+    outline: none;
+    border-radius: 12px;
+    font-size: 15px;
+    background: rgba(255,255,255,0.9);
+    transition: 0.3s;
+}
+
+/* Input Focus */
+input:focus,
+textarea:focus{
+    transform: scale(1.02);
+    box-shadow: 0 0 10px #ffffff;
+}
+
+/* Textarea */
+textarea{
+    height: 120px;
+    resize: none;
+}
+
+/* Buttons */
+button{
+    width: 100%;
+    padding: 14px;
+    background: linear-gradient(45deg, #00c6ff, #0072ff);
+    color: white;
+    border: none;
+    border-radius: 12px;
+    font-size: 16px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: 0.3s;
+}
+
+/* Button Hover */
+button:hover{
+    transform: scale(1.03);
+    background: linear-gradient(45deg, #0072ff, #00c6ff);
+}
+
+/* Complaint Card */
+.complaint-card{
+    background: rgba(255,255,255,0.2);
+    padding: 18px;
+    margin-top: 18px;
+    border-radius: 15px;
+    color: white;
+    border-left: 5px solid #00c6ff;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+}
+
+/* Complaint Card Text */
+.complaint-card p,
+.complaint-card h3{
+    margin-bottom: 10px;
+}
+
+/* Pending Status */
+.pending{
+    color: #ffd43b;
+    font-weight: bold;
+    font-size: 16px;
+}
+
+/* Resolved Status */
+.resolved{
+    color: #51ff00;
+    font-weight: bold;
+    font-size: 16px;
+}
+
+/* Horizontal Line */
+hr{
+    border: none;
+    height: 1px;
+    background: rgba(255,255,255,0.3);
+    margin: 25px 0;
+}
+
+/* Responsive Design */
+@media(max-width: 768px){
+
+    .container{
+        flex-direction: column;
+        align-items: center;
+    }
+
+    .box{
+        width: 100%;
+    }
+
+    h1{
+        font-size: 28px;
+    }
+}
