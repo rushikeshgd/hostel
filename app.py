@@ -1,7 +1,11 @@
-from flask import Flask, render_template, request, redirect
+from flask import Flask, render_template, request, redirect, flash, session
 import sqlite3
+from datetime import datetime
 
 app = Flask(__name__)
+
+app.secret_key = "hostel_secret_key"
+
 
 # =========================
 # DATABASE CREATE
@@ -22,22 +26,24 @@ def init_db():
     )
     """)
 
-    # COMPLAINT TABLE
-    cursor.execute("""
-    CREATE TABLE IF NOT EXISTS complaints(
-        id INTEGER PRIMARY KEY AUTOINCREMENT,
-        username TEXT,
-        complaint TEXT,
-        status TEXT
-    )
-    """)
-
     # ADMIN TABLE
     cursor.execute("""
     CREATE TABLE IF NOT EXISTS admins(
         id INTEGER PRIMARY KEY AUTOINCREMENT,
         username TEXT,
         password TEXT
+    )
+    """)
+
+    # COMPLAINT TABLE
+    cursor.execute("""
+    CREATE TABLE IF NOT EXISTS complaints(
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        username TEXT,
+        category TEXT,
+        complaint TEXT,
+        status TEXT,
+        date TEXT
     )
     """)
 
@@ -51,7 +57,16 @@ def init_db():
 
 @app.route('/')
 def home():
-    return render_template('index.html')
+    return render_template("home.html")
+
+
+# =========================
+# STUDENT REGISTER PAGE
+# =========================
+
+@app.route('/student_register')
+def student_register_page():
+    return render_template("student_register.html")
 
 
 # =========================
@@ -76,7 +91,18 @@ def register():
     conn.commit()
     conn.close()
 
-    return "Registration Successful"
+    flash("Registration Successful")
+
+    return redirect('/student_login')
+
+
+# =========================
+# STUDENT LOGIN PAGE
+# =========================
+
+@app.route('/student_login')
+def student_login_page():
+    return render_template("student_login.html")
 
 
 # =========================
@@ -102,6 +128,8 @@ def login():
 
     if user:
 
+        session['student'] = username
+
         cursor.execute("""
         SELECT * FROM complaints
         WHERE username=?
@@ -111,8 +139,10 @@ def login():
 
         conn.close()
 
+        flash("Login Successful")
+
         return render_template(
-            "dashboard.html",
+            "student_dashboard.html",
             username=username,
             complaints=complaints
         )
@@ -121,7 +151,41 @@ def login():
 
         conn.close()
 
-        return "Invalid Username or Password"
+        flash("Invalid Username or Password")
+
+        return redirect('/student_login')
+
+
+# =========================
+# STUDENT DASHBOARD
+# =========================
+
+@app.route('/student_dashboard')
+def student_dashboard():
+
+    if 'student' not in session:
+        return redirect('/student_login')
+
+    username = session['student']
+
+    conn = sqlite3.connect("hostel.db")
+
+    cursor = conn.cursor()
+
+    cursor.execute("""
+    SELECT * FROM complaints
+    WHERE username=?
+    """, (username,))
+
+    complaints = cursor.fetchall()
+
+    conn.close()
+
+    return render_template(
+        "student_dashboard.html",
+        username=username,
+        complaints=complaints
+    )
 
 
 # =========================
@@ -131,54 +195,54 @@ def login():
 @app.route('/complaint', methods=['POST'])
 def complaint():
 
-    username = request.form['username']
-    complaint = request.form['complaint']
+    if 'student' not in session:
+        return redirect('/student_login')
+
+    username = session['student']
+
+    category = request.form['category']
+
+    # IF OTHER CATEGORY
+    if category == "Other":
+        category = request.form['other_category']
+
+    complaint_text = request.form['complaint']
+
+    status = "Pending"
+
+    date = datetime.now().strftime("%d-%m-%Y %H:%M")
 
     conn = sqlite3.connect("hostel.db")
 
     cursor = conn.cursor()
 
     cursor.execute("""
-    INSERT INTO complaints(username, complaint, status)
-    VALUES(?, ?, ?)
-    """, (username, complaint, "Pending"))
+    INSERT INTO complaints(username, category, complaint, status, date)
+    VALUES(?, ?, ?, ?, ?)
+    """, (username, category, complaint_text, status, date))
 
     conn.commit()
     conn.close()
 
-    return "Complaint Submitted Successfully"
+    flash("Complaint Submitted Successfully")
+
+    return redirect('/student_dashboard')
 
 
 # =========================
-# ADMIN REGISTER
+# ADMIN LOGIN PAGE
 # =========================
 
-@app.route('/admin_register', methods=['POST'])
-def admin_register():
-
-    username = request.form['username']
-    password = request.form['password']
-
-    conn = sqlite3.connect("hostel.db")
-
-    cursor = conn.cursor()
-
-    cursor.execute("""
-    INSERT INTO admins(username, password)
-    VALUES(?, ?)
-    """, (username, password))
-
-    conn.commit()
-    conn.close()
-
-    return "Admin Registration Successful"
+@app.route('/admin_login')
+def admin_login_page():
+    return render_template("admin_login.html")
 
 
 # =========================
 # ADMIN LOGIN
 # =========================
 
-@app.route('/admin_login', methods=['POST'])
+@app.route('/admin_login_form', methods=['POST'])
 def admin_login():
 
     username = request.form['username']
@@ -197,6 +261,8 @@ def admin_login():
 
     if admin:
 
+        session['admin'] = username
+
         cursor.execute("""
         SELECT * FROM complaints
         """)
@@ -204,6 +270,8 @@ def admin_login():
         complaints = cursor.fetchall()
 
         conn.close()
+
+        flash("Admin Login Successful")
 
         return render_template(
             "admin_dashboard.html",
@@ -214,7 +282,48 @@ def admin_login():
 
         conn.close()
 
-        return "Invalid Admin Username or Password"
+        flash("Invalid Admin Username or Password")
+
+        return redirect('/admin_login')
+
+
+# =========================
+# ADMIN DASHBOARD
+# =========================
+
+@app.route('/admin_dashboard')
+def admin_dashboard():
+
+    if 'admin' not in session:
+        return redirect('/admin_login')
+
+    conn = sqlite3.connect("hostel.db")
+
+    cursor = conn.cursor()
+
+    search = request.args.get('search')
+
+    if search:
+
+        cursor.execute("""
+        SELECT * FROM complaints
+        WHERE username LIKE ?
+        """, ('%' + search + '%',))
+
+    else:
+
+        cursor.execute("""
+        SELECT * FROM complaints
+        """)
+
+    complaints = cursor.fetchall()
+
+    conn.close()
+
+    return render_template(
+        "admin_dashboard.html",
+        complaints=complaints
+    )
 
 
 # =========================
@@ -237,7 +346,9 @@ def resolve(id):
     conn.commit()
     conn.close()
 
-    return redirect('/')
+    flash("Complaint Resolved")
+
+    return redirect('/admin_dashboard')
 
 
 # =========================
@@ -260,16 +371,44 @@ def pending(id):
     conn.commit()
     conn.close()
 
+    flash("Complaint Marked Pending")
+
+    return redirect('/admin_dashboard')
+
+
+# =========================
+# LOGOUT
+# =========================
+
+@app.route('/logout')
+def logout():
+
+    session.clear()
+
+    flash("Logged Out Successfully")
+
     return redirect('/')
 
 
-# =========================
-# RUN APP
-# =========================
+@app.route('/create_admin')
+def create_admin():
+
+    conn = sqlite3.connect("hostel.db")
+
+    cursor = conn.cursor()
+
+    cursor.execute("""
+    INSERT INTO admins(username, password)
+    VALUES(?, ?)
+    """, ("admin", "admin123"))
+
+    conn.commit()
+    conn.close()
+
+    return "Admin Created"
+
+#RUN APP
 
 init_db()
 
-if __name__ == "__main__":
-    import os
-    port = int(os.environ.get("PORT", 10000))
-    app.run(host="0.0.0.0", port=port)
+app.run(debug=True)

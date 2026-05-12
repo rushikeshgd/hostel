@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0">
+
+    <title>Hostel Complaint Management System</title>
+
+    <!-- CSS -->
+    <link rel="stylesheet"
+          href="{{ url_for('static', filename='style.css') }}">
+
+    <!-- Font Awesome Icons -->
+    <link rel="stylesheet"
+          href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+
+</head>
+
+<body>
+
+    <!-- NAVBAR -->
+    <nav class="navbar">
+
+        <div class="logo">
+            Hostel CMS
+        </div>
+
+        <ul>
+
+            <li>
+                <a href="/">Home</a>
+            </li>
+
+            <li>
+                <a href="/student_login">
+                    Student
+                </a>
+            </li>
+
+            <li>
+                <a href="/admin_login">
+                    Admin
+                </a>
+            </li>
+
+        </ul>
+
+    </nav>
+
+
+    <!-- HOME CONTAINER -->
+    <div class="home-container">
+
+        <div class="overlay"></div>
+
+        <div class="home-content">
+
+            <h1>
+                Hostel Complaint Management System
+            </h1>
+
+            <p>
+
+                Smart digital platform for managing hostel complaints efficiently and professionally.
+
+            </p>
+
+            <div class="button-group">
+
+                <a href="/student_login"
+                   class="home-btn">
+
+                    <i class="fas fa-user"></i>
+
+                    Student Portal
+
+                </a>
+
+                <a href="/admin_login"
+                   class="home-btn admin-btn">
+
+                    <i class="fas fa-user-shield"></i>
+
+                    Admin Portal
+
+                </a>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</body>
+
+</html>

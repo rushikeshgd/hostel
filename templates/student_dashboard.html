@@ -1,0 +1,252 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0">
+
+    <title>Student Dashboard</title>
+
+    <link rel="stylesheet"
+          href="{{ url_for('static', filename='style.css') }}">
+
+    <link rel="stylesheet"
+          href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+
+</head>
+
+<body>
+
+<!-- NAVBAR -->
+
+<nav class="navbar">
+
+    <div class="logo">
+        Hostel CMS
+    </div>
+
+    <ul>
+
+        <li>
+            <a href="/student_dashboard">
+                Dashboard
+            </a>
+        </li>
+
+        <li>
+            <a href="/logout">
+                Logout
+            </a>
+        </li>
+
+    </ul>
+
+</nav>
+
+
+<div class="dashboard-container">
+
+    <!-- LEFT SIDE -->
+
+    <div class="dashboard-box">
+
+        <h2>
+
+            <i class="fas fa-user"></i>
+
+            Welcome {{ username }}
+
+        </h2>
+
+
+        <!-- FLASH MESSAGE -->
+
+        {% with messages = get_flashed_messages() %}
+
+            {% if messages %}
+
+                {% for message in messages %}
+
+                    <div class="flash-message">
+
+                        {{ message }}
+
+                    </div>
+
+                {% endfor %}
+
+            {% endif %}
+
+        {% endwith %}
+
+
+        <!-- COMPLAINT FORM -->
+
+        <form action="/complaint"
+              method="POST">
+
+            <select name="category"
+                    id="category"
+                    onchange="showOtherField()"
+                    required>
+
+                <option value="">
+                    Select Complaint Category
+                </option>
+
+                <option value="Electricity">
+                    Electricity
+                </option>
+
+                <option value="Water">
+                    Water
+                </option>
+
+                <option value="WiFi">
+                    WiFi
+                </option>
+
+                <option value="Mess Food">
+                    Mess Food
+                </option>
+
+                <option value="Cleaning">
+                    Cleaning
+                </option>
+
+                <option value="Furniture">
+                    Furniture
+                </option>
+
+                <option value="Other">
+                    Other
+                </option>
+
+            </select>
+
+
+            <!-- OTHER CATEGORY -->
+
+            <input type="text"
+                   name="other_category"
+                   id="otherField"
+                   placeholder="Write Your Category"
+                   style="display:none;">
+
+
+            <textarea name="complaint"
+                      placeholder="Write Complaint Here..."
+                      required></textarea>
+
+            <button type="submit">
+
+                Submit Complaint
+
+            </button>
+
+        </form>
+
+    </div>
+
+
+    <!-- RIGHT SIDE -->
+
+    <div class="dashboard-box">
+
+        <h2>
+
+            <i class="fas fa-list"></i>
+
+            Your Complaints
+
+        </h2>
+
+        {% for complaint in complaints %}
+
+        <div class="complaint-card">
+
+            <h3>
+
+                {{ complaint[2] }}
+
+            </h3>
+
+            <p>
+
+                {{ complaint[3] }}
+
+            </p>
+
+            <small>
+
+                {{ complaint[5] }}
+
+            </small>
+
+            <br><br>
+
+            {% if complaint[4] == "Pending" %}
+
+                <span class="pending">
+
+                    {{ complaint[4] }}
+
+                </span>
+
+            {% else %}
+
+                <span class="resolved">
+
+                    {{ complaint[4] }}
+
+                </span>
+
+            {% endif %}
+
+        </div>
+
+        {% endfor %}
+
+    </div>
+
+</div>
+
+
+<!-- JAVASCRIPT -->
+
+<script>
+
+function showOtherField(){
+
+    let category =
+        document.getElementById("category").value;
+
+    let otherField =
+        document.getElementById("otherField");
+
+    if(category == "Other"){
+
+        otherField.style.display = "block";
+
+        otherField.required = true;
+
+    }
+
+    else{
+
+        otherField.style.display = "none";
+
+        otherField.required = false;
+
+    }
+
+}
+
+</script>
+
+</body>
+
+</html>

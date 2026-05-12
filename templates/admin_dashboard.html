@@ -1,68 +1,176 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    <!-- Website Title -->
-    <title>Hostel Complaint Management System - Admin Dashboard</title>
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0">
+
+    <title>Admin Dashboard</title>
 
     <link rel="stylesheet"
           href="{{ url_for('static', filename='style.css') }}">
+
+    <link rel="stylesheet"
+          href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+
 </head>
 
 <body>
 
-<div class="container">
+<nav class="navbar">
 
-    <h1>Admin Dashboard</h1>
+    <div class="logo">
+        Hostel CMS
+    </div>
 
-    <div class="box">
+    <ul>
 
-        <h2>All Student Complaints</h2>
+        <li>
+            <a href="/admin_dashboard">
+                Dashboard
+            </a>
+        </li>
+
+        <li>
+            <a href="/logout">
+                Logout
+            </a>
+        </li>
+
+    </ul>
+
+</nav>
+
+
+<div class="dashboard-container">
+
+    <div class="dashboard-box full-width">
+
+        <h2>
+
+            <i class="fas fa-user-shield"></i>
+
+            Admin Dashboard
+
+        </h2>
+
+
+        <!-- FLASH MESSAGE -->
+
+        {% with messages = get_flashed_messages() %}
+
+            {% if messages %}
+
+                {% for message in messages %}
+
+                    <div class="flash-message">
+
+                        {{ message }}
+
+                    </div>
+
+                {% endfor %}
+
+            {% endif %}
+
+        {% endwith %}
+
+
+        <!-- SEARCH BAR -->
+
+        <form method="GET"
+              action="/admin_dashboard">
+
+            <input type="text"
+                   name="search"
+                   placeholder="Search by username">
+
+            <button type="submit">
+
+                Search
+
+            </button>
+
+        </form>
+
+
+        <!-- COMPLAINTS -->
 
         {% for complaint in complaints %}
 
         <div class="complaint-card">
 
-            <h3>{{ complaint[1] }}</h3>
+            <h3>
 
-            <p>{{ complaint[2] }}</p>
+                {{ complaint[1] }}
 
-            {% if complaint[3] == "Pending" %}
+            </h3>
+
+            <p>
+
+                <b>Category:</b>
+
+                {{ complaint[2] }}
+
+            </p>
+
+            <p>
+
+                {{ complaint[3] }}
+
+            </p>
+
+            <small>
+
+                {{ complaint[5] }}
+
+            </small>
+
+            <br><br>
+
+            {% if complaint[4] == "Pending" %}
 
                 <span class="pending">
-                    {{ complaint[3] }}
+
+                    {{ complaint[4] }}
+
                 </span>
 
             {% else %}
 
                 <span class="resolved">
-                    {{ complaint[3] }}
+
+                    {{ complaint[4] }}
+
                 </span>
 
             {% endif %}
 
             <br><br>
 
-            <!-- RESOLVE BUTTON -->
             <form action="/resolve/{{ complaint[0] }}"
                   method="POST">
 
                 <button type="submit">
+
                     Resolve
+
                 </button>
 
             </form>
 
             <br>
 
-            <!-- PENDING BUTTON -->
             <form action="/pending/{{ complaint[0] }}"
                   method="POST">
 
                 <button type="submit">
+
                     Pending
+
                 </button>
 
             </form>
@@ -76,4 +184,5 @@
 </div>
 
 </body>
+
 </html>
